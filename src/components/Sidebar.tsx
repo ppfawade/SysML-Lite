@@ -111,7 +111,7 @@ export default function Sidebar() {
     let mermaid = 'classDiagram\n';
     
     nodes.forEach(n => {
-      const el = elements[n.data.elementId];
+      const el = elements[n.data.elementId as string];
       if (!el) return;
       
       const safeName = el.name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -134,8 +134,8 @@ export default function Sidebar() {
       const targetNode = nodes.find(n => n.id === e.target);
       
       if (sourceNode && targetNode) {
-        const sEl = elements[sourceNode.data.elementId];
-        const tEl = elements[targetNode.data.elementId];
+        const sEl = elements[sourceNode.data.elementId as string];
+        const tEl = elements[targetNode.data.elementId as string];
         
         if (sEl && tEl) {
           const sName = sEl.name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -246,17 +246,53 @@ export default function Sidebar() {
 
         <button 
           onClick={() => addElement('Activity')}
-          className="w-full flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg hover:border-green-500 hover:shadow-md transition-all text-left group"
+          className="w-full flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg hover:border-orange-500 hover:shadow-md transition-all text-left group"
         >
-          <div className="p-2 bg-green-50 text-green-600 rounded group-hover:bg-green-600 group-hover:text-white transition-colors">
+          <div className="p-2 bg-orange-50 text-orange-600 rounded group-hover:bg-orange-600 group-hover:text-white transition-colors">
             <Activity size={18} />
           </div>
           <div>
             <div className="font-medium text-sm text-slate-900">Activity</div>
-            <div className="text-xs text-slate-500">Process flow</div>
+            <div className="text-xs text-slate-500">Action node</div>
           </div>
-          <Plus size={14} className="ml-auto text-slate-300 group-hover:text-green-500" />
+          <Plus size={14} className="ml-auto text-slate-300 group-hover:text-orange-500" />
         </button>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button 
+            onClick={() => addElement('Decision')}
+            className="flex flex-col items-center gap-1 p-2 bg-white border border-slate-200 rounded-lg hover:border-amber-500 hover:shadow-md transition-all group"
+          >
+            <div className="w-6 h-6 rotate-45 border-2 border-amber-600 bg-amber-100 rounded-sm"></div>
+            <div className="text-xs font-medium text-slate-700">Decision</div>
+          </button>
+
+          <button 
+            onClick={() => addElement('Start')}
+            className="flex flex-col items-center gap-1 p-2 bg-white border border-slate-200 rounded-lg hover:border-slate-800 hover:shadow-md transition-all group"
+          >
+            <div className="w-6 h-6 rounded-full bg-black"></div>
+            <div className="text-xs font-medium text-slate-700">Start</div>
+          </button>
+
+          <button 
+            onClick={() => addElement('End')}
+            className="flex flex-col items-center gap-1 p-2 bg-white border border-slate-200 rounded-lg hover:border-slate-800 hover:shadow-md transition-all group"
+          >
+            <div className="w-6 h-6 rounded-full border-4 border-black bg-white flex items-center justify-center">
+              <div className="w-2 h-2 bg-black rounded-full"></div>
+            </div>
+            <div className="text-xs font-medium text-slate-700">End</div>
+          </button>
+
+          <button 
+            onClick={() => addElement('Fork')}
+            className="flex flex-col items-center gap-1 p-2 bg-white border border-slate-200 rounded-lg hover:border-slate-800 hover:shadow-md transition-all group"
+          >
+            <div className="w-1 h-6 bg-black rounded-sm"></div>
+            <div className="text-xs font-medium text-slate-700">Fork/Join</div>
+          </button>
+        </div>
 
         <button 
           onClick={() => addElement('Package')}

@@ -34,6 +34,40 @@ const SysMLNode = memo(({ data, selected }: NodeProps) => {
     </div>
   );
 
+  if (element.type === 'Start') {
+    return (
+      <div className={`relative group w-6 h-6 rounded-full bg-black border-2 border-slate-800 shadow-sm ${selected ? 'ring-2 ring-blue-400' : ''}`}>
+        <Handles />
+      </div>
+    );
+  }
+
+  if (element.type === 'End') {
+    return (
+      <div className={`relative group w-8 h-8 rounded-full bg-white border-4 border-black flex items-center justify-center shadow-sm ${selected ? 'ring-2 ring-blue-400' : ''}`}>
+        <div className="w-4 h-4 bg-black rounded-full" />
+        <Handles />
+      </div>
+    );
+  }
+
+  if (element.type === 'Decision') {
+    return (
+      <div className={`relative group w-12 h-12 rotate-45 bg-[#FEF3C7] border-2 border-amber-600 flex items-center justify-center shadow-sm ${selected ? 'ring-2 ring-blue-400' : ''}`}>
+        <div className="-rotate-45 text-xs font-bold text-amber-900">{element.name !== '?' ? element.name : ''}</div>
+        <Handles />
+      </div>
+    );
+  }
+
+  if (element.type === 'Fork' || element.type === 'Join') {
+    return (
+      <div className={`relative group w-4 h-24 bg-slate-900 rounded-sm shadow-sm ${selected ? 'ring-2 ring-blue-400' : ''}`}>
+        <Handles />
+      </div>
+    );
+  }
+
   if (element.type === 'UseCase') {
     return (
       <div className={`relative group min-w-[140px] min-h-[70px] rounded-[50%] border ${borderColor} bg-[#F5F5F5] flex flex-col items-center justify-center shadow-sm px-6 py-4`}>

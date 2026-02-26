@@ -7,13 +7,14 @@ import {
   Connection, 
   applyNodeChanges, 
   applyEdgeChanges, 
-  addEdge 
+  addEdge,
+  MarkerType
 } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 
 // --- Types ---
 
-export type SysMLElementType = 'Block' | 'Requirement' | 'Actor' | 'UseCase' | 'Activity' | 'Package';
+export type SysMLElementType = 'Block' | 'Requirement' | 'Actor' | 'UseCase' | 'Activity' | 'Package' | 'Decision' | 'Start' | 'End' | 'Fork' | 'Join';
 
 export interface SysMLElement {
   id: string;
@@ -62,31 +63,45 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'edge-1', source: 'node-1', target: 'node-2', label: 'satisfy', type: 'default', animated: true, style: { strokeDasharray: '5,5' } }
+  { 
+    id: 'edge-1', 
+    source: 'node-1', 
+    target: 'node-2', 
+    label: 'satisfy', 
+    animated: true, 
+    style: { strokeDasharray: '5,5' },
+    type: 'smoothstep',
+    markerEnd: { type: MarkerType.ArrowClosed }
+  }
 ];
-
-// --- Store ---
 
 export const useStore = create<AppState>((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
   elements: initialElements,
-  selectedElementId: null,
-  selectedEdgeId: null,
 
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
     });
   },
+
   onEdgesChange: (changes) => {
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+
   onConnect: (connection) => {
     set({
-      edges: addEdge({ ...connection, type: 'default', label: 'dependency', animated: true, style: { strokeDasharray: '5,5' } }, get().edges),
+      edges: addEdge({ 
+        ...connection, 
+        type: 'smoothstep', // Orthogonal routing
+        label: '', // Default no label
+        animated: false,
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#333' }, // Standard arrow
+        style: { strokeWidth: 1.5, stroke: '#333' }
+      }, get().edges),
     });
   },
 
@@ -94,10 +109,19 @@ export const useStore = create<AppState>((set, get) => ({
     const id = uuidv4();
     const nodeId = `node-${id}`;
     
+    let width = 150;
+    let height = 100;
+    let name = `New ${type}`;
+
+    // Sizing based on type for better UX
+    if (type === 'Decision') { width = 60; height = 60; name = '?'; }
+    if (type === 'Start' || type === 'End') { width = 40; height = 40; name = ''; }
+    if (type === 'Fork' || type === 'Join') { width = 10; height = 100; name = ''; }
+    
     const newElement: SysMLElement = {
       id,
       type,
-      name: `New ${type}`,
+      name,
       description: ''
     };
 
@@ -105,7 +129,9 @@ export const useStore = create<AppState>((set, get) => ({
       id: nodeId,
       type: 'sysmlNode',
       position: { x: Math.random() * 400 + 50, y: Math.random() * 400 + 50 },
-      data: { elementId: id }
+      data: { elementId: id },
+      width, // Store initial dimensions
+      height
     };
 
     set(state => ({
@@ -123,8 +149,10 @@ export const useStore = create<AppState>((set, get) => ({
     }));
   },
 
+  selectedElementId: null,
   selectElement: (id) => set({ selectedElementId: id, selectedEdgeId: null }),
   
+  selectedEdgeId: null,
   selectEdge: (id) => set({ selectedEdgeId: id, selectedElementId: null }),
 
   updateEdge: (id, data) => {
@@ -132,25 +160,29 @@ export const useStore = create<AppState>((set, get) => ({
       edges: state.edges.map(edge => {
         if (edge.id !== id) return edge;
         
-        // Apply SysML styling based on "type" (which we store in label or a custom field, but here we simplify)
-        // Actually, let's use the 'data' passed in to configure the edge
         let newEdge = { ...edge, ...data };
         
-        // Helper to style based on label/type intent
-        if (data.label === 'Association') {
-           newEdge.animated = false;
-           newEdge.style = { strokeDasharray: undefined };
-        } else if (['Dependency', 'satisfy', 'verify', 'refine', 'trace'].includes(data.label || '')) {
-           newEdge.animated = true;
-           newEdge.style = { strokeDasharray: '5,5' };
-        } else if (['Aggregation', 'Composition', 'Containment'].includes(data.label || '')) {
-           newEdge.animated = false;
-           newEdge.style = { strokeDasharray: undefined };
-           // Note: Actual diamond markers require custom edge types or SVG definitions, 
-           // but for now we just handle the line style.
-        } else if (data.label === 'Generalization') {
-           newEdge.animated = false;
-           newEdge.style = { strokeDasharray: undefined };
+        // Reset styles first
+        newEdge.markerEnd = { type: MarkerType.ArrowClosed };
+        newEdge.style = { strokeDasharray: undefined, strokeWidth: 1.5 };
+        newEdge.animated = false;
+
+        const label = data.label || edge.label || '';
+
+        // SysML/UML Standard Styles
+        if (label === 'Association') {
+           newEdge.markerEnd = undefined; // Open line or specific arrow? usually open for simple association
+        } else if (['Dependency', 'satisfy', 'verify', 'refine', 'trace'].includes(label)) {
+           newEdge.style = { ...newEdge.style, strokeDasharray: '5,5' };
+           newEdge.markerEnd = { type: MarkerType.ArrowClosed }; // Should be open arrow technically, but ArrowClosed is closest in default
+        } else if (label === 'Composition') {
+           newEdge.markerStart = 'composition'; // Requires custom marker, fallback to standard for now
+           newEdge.markerEnd = undefined;
+        } else if (label === 'Aggregation') {
+           newEdge.markerStart = 'aggregation';
+           newEdge.markerEnd = undefined;
+        } else if (label === 'Generalization') {
+           newEdge.markerEnd = { type: MarkerType.ArrowClosed }; // Should be hollow triangle
         }
 
         return newEdge;

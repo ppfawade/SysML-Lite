@@ -2,7 +2,7 @@ import React from 'react';
 import { useStore } from '../store';
 
 export default function PropertiesPanel() {
-  const { elements, selectedElementId, updateElement, selectedEdgeId, edges, updateEdge, selectEdge, selectElement } = useStore();
+  const { elements, selectedElementId, updateElement, selectedEdgeId, edges, updateEdge, selectEdge, selectElement, removeEdge } = useStore();
   
   const selectedElement = selectedElementId ? elements[selectedElementId] : null;
   const selectedEdge = selectedEdgeId ? edges.find(e => e.id === selectedEdgeId) : null;
@@ -25,10 +25,25 @@ export default function PropertiesPanel() {
               <option value="Dependency">Dependency</option>
               <option value="satisfy">«satisfy»</option>
               <option value="verify">«verify»</option>
+              <option value="refine">«refine»</option>
+              <option value="trace">«trace»</option>
               <option value="Association">Association</option>
+              <option value="Composition">Composition</option>
+              <option value="Aggregation">Aggregation</option>
+              <option value="Generalization">Generalization</option>
             </select>
           </div>
-          <div className="text-xs text-slate-400">
+          
+          <div className="pt-4 border-t border-slate-200">
+             <button 
+               onClick={() => removeEdge(selectedEdge.id)}
+               className="w-full py-2 bg-red-50 text-red-600 border border-red-200 rounded hover:bg-red-100 text-xs font-medium transition-colors"
+             >
+               Delete Connector
+             </button>
+          </div>
+
+          <div className="text-xs text-slate-400 mt-4">
             ID: {selectedEdge.id}
           </div>
         </div>
