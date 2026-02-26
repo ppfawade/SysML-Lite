@@ -51,12 +51,12 @@ export default function PropertiesPanel() {
         <button onClick={() => selectElement(null)} className="text-xs text-blue-600 hover:underline">Close</button>
       </div>
       
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 flex-1 overflow-y-auto">
         <div>
           <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase">Name</label>
           <input 
             value={selectedElement.name}
-            onChange={(e) => updateElement(selectedElement.id, e.target.value)}
+            onChange={(e) => updateElement(selectedElement.id, { name: e.target.value })}
             className="w-full text-sm border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -73,6 +73,16 @@ export default function PropertiesPanel() {
           <div className="text-xs font-mono text-slate-400 truncate">
             {selectedElement.id}
           </div>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4 mt-2">
+          <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Description</label>
+          <textarea
+            value={selectedElement.description}
+            onChange={(e) => updateElement(selectedElement.id, { description: e.target.value })}
+            placeholder="Enter description or properties..."
+            className="w-full text-xs border border-slate-300 rounded px-2 py-2 min-h-[150px] font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+          />
         </div>
       </div>
     </div>

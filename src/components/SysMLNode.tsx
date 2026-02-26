@@ -11,28 +11,82 @@ const SysMLNode = memo(({ data, selected }: NodeProps) => {
   let borderColor = selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-800';
   let headerColor = 'bg-transparent';
 
-  if (element.type === 'Block') bgColor = 'bg-[#FFF8DC]'; // Cornsilk
-  if (element.type === 'Requirement') bgColor = 'bg-[#F0F8F0]'; // Honeydew
+  // Common Handles
+  const Handles = () => (
+    <>
+      <Handle type="target" position={Position.Top} className="!bg-slate-800 w-8 h-8 -top-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="source" position={Position.Bottom} className="!bg-slate-800 w-8 h-8 -bottom-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="target" position={Position.Left} className="!bg-slate-800 w-8 h-8 -left-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="source" position={Position.Right} className="!bg-slate-800 w-8 h-8 -right-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
+    </>
+  );
+
+  // Common Description Component
+  const DescriptionContent = () => (
+    <div className="w-full">
+      {element.description ? (
+        <div className="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-tight text-left">
+          {element.description}
+        </div>
+      ) : (
+        <div className="text-[10px] text-slate-400 italic text-center">No description</div>
+      )}
+    </div>
+  );
+
   if (element.type === 'UseCase') {
-    bgColor = 'bg-[#F5F5F5]';
     return (
-      <div className={`relative group min-w-[120px] min-h-[60px] rounded-[50%] border ${borderColor} ${bgColor} flex items-center justify-center shadow-sm px-4`}>
-        <Handle type="target" position={Position.Top} className="!bg-slate-800 w-3 h-3 -top-1.5" />
-        <Handle type="source" position={Position.Bottom} className="!bg-slate-800 w-3 h-3 -bottom-1.5" />
-        <div className="text-center">
+      <div className={`relative group min-w-[140px] min-h-[70px] rounded-[50%] border ${borderColor} bg-[#F5F5F5] flex flex-col items-center justify-center shadow-sm px-6 py-4`}>
+        <Handles />
+        <div className="text-center mb-1">
           <div className="font-bold text-sm">{element.name}</div>
+        </div>
+        {element.description && (
+          <div className="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-tight text-center max-w-full overflow-hidden text-ellipsis">
+            {element.description}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (element.type === 'Activity') {
+    return (
+      <div className={`relative group min-w-[140px] min-h-[80px] rounded-[20px] border-2 ${borderColor} bg-white flex flex-col items-center shadow-sm overflow-hidden`}>
+        <Handles />
+        <div className="w-full text-center p-2 border-b border-slate-100">
+          <div className="text-[10px] italic text-slate-600">«activity»</div>
+          <div className="font-bold text-sm">{element.name}</div>
+        </div>
+        <div className="w-full p-2 bg-slate-50/50 flex-1">
+          <DescriptionContent />
         </div>
       </div>
     );
   }
 
+  if (element.type === 'Package') {
+    return (
+      <div className="relative group min-w-[140px]">
+        <Handles />
+        <div className={`absolute -top-6 left-0 bg-[#FFF8DC] border border-b-0 ${borderColor} px-2 py-1 text-xs h-7 min-w-[60px] max-w-[120px] rounded-t-sm z-10 truncate`}>
+          <span className="font-bold">{element.name}</span>
+        </div>
+        <div className={`bg-[#FFF8DC] border ${borderColor} rounded-sm rounded-tl-none min-h-[80px] shadow-sm pt-4 relative z-0`}>
+          <div className="p-2">
+            <DescriptionContent />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (element.type === 'Block') bgColor = 'bg-[#FFF8DC]'; // Cornsilk
+  if (element.type === 'Requirement') bgColor = 'bg-[#F0F8F0]'; // Honeydew
+
   return (
     <div className={`relative group min-w-[150px] rounded-sm border ${borderColor} ${bgColor} shadow-sm`}>
-      {/* Handles - Increased size for easier snapping */}
-      <Handle type="target" position={Position.Top} className="!bg-slate-800 w-3 h-3 -top-1.5" />
-      <Handle type="source" position={Position.Bottom} className="!bg-slate-800 w-3 h-3 -bottom-1.5" />
-      <Handle type="target" position={Position.Left} className="!bg-slate-800 w-3 h-3 -left-1.5" />
-      <Handle type="source" position={Position.Right} className="!bg-slate-800 w-3 h-3 -right-1.5" />
+      <Handles />
 
       {/* Header */}
       <div className={`px-2 py-1 text-center border-b border-slate-800/20 ${headerColor}`}>
@@ -42,10 +96,13 @@ const SysMLNode = memo(({ data, selected }: NodeProps) => {
 
       {/* Body */}
       <div className="p-2 min-h-[40px]">
-        {element.properties.map((prop, i) => (
-          <div key={i} className="text-xs text-slate-700 font-mono">{prop}</div>
-        ))}
-        {element.properties.length === 0 && <div className="text-[10px] text-slate-400 italic">No properties</div>}
+        {element.description ? (
+          <div className="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-tight">
+            {element.description}
+          </div>
+        ) : (
+          <div className="text-[10px] text-slate-400 italic">No description</div>
+        )}
       </div>
     </div>
   );

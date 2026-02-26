@@ -13,14 +13,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 // --- Types ---
 
-export type SysMLElementType = 'Block' | 'Requirement' | 'Actor' | 'UseCase';
+export type SysMLElementType = 'Block' | 'Requirement' | 'Actor' | 'UseCase' | 'Activity' | 'Package';
 
 export interface SysMLElement {
   id: string;
   type: SysMLElementType;
   name: string;
   stereotype?: string;
-  properties: string[]; // Simplified for now
+  description: string;
 }
 
 interface AppState {
@@ -33,7 +33,7 @@ interface AppState {
   onConnect: (connection: Connection) => void;
   
   addElement: (type: SysMLElementType) => void;
-  updateElement: (id: string, name: string) => void;
+  updateElement: (id: string, updates: Partial<SysMLElement>) => void;
   
   selectedElementId: string | null;
   selectElement: (id: string | null) => void;
@@ -49,8 +49,8 @@ const initialBlockId = 'elem-1';
 const initialReqId = 'elem-2';
 
 const initialElements: Record<string, SysMLElement> = {
-  [initialBlockId]: { id: initialBlockId, type: 'Block', name: 'Main System', properties: ['power: Real', 'mass: Real'] },
-  [initialReqId]: { id: initialReqId, type: 'Requirement', name: 'Performance Req', properties: ['id: REQ-001', 'text: The system shall be fast.'] },
+  [initialBlockId]: { id: initialBlockId, type: 'Block', name: 'Main System', description: 'power: Real\nmass: Real' },
+  [initialReqId]: { id: initialReqId, type: 'Requirement', name: 'Performance Req', description: 'id: REQ-001\ntext: The system shall be fast.' },
 };
 
 const initialNodes: Node[] = [
@@ -95,7 +95,7 @@ export const useStore = create<AppState>((set, get) => ({
       id,
       type,
       name: `New ${type}`,
-      properties: []
+      description: ''
     };
 
     const newNode: Node = {
@@ -111,11 +111,11 @@ export const useStore = create<AppState>((set, get) => ({
     }));
   },
 
-  updateElement: (id, name) => {
+  updateElement: (id, updates) => {
     set(state => ({
       elements: {
         ...state.elements,
-        [id]: { ...state.elements[id], name }
+        [id]: { ...state.elements[id], ...updates }
       }
     }));
   },
