@@ -41,6 +41,9 @@ interface AppState {
   selectedEdgeId: string | null;
   selectEdge: (id: string | null) => void;
   updateEdge: (id: string, data: { label?: string; type?: string }) => void;
+  removeEdge: (id: string) => void;
+  
+  loadState: (state: Partial<AppState>) => void;
 }
 
 // --- Initial Data (Proof of Life) ---
@@ -137,13 +140,46 @@ export const useStore = create<AppState>((set, get) => ({
         if (data.label === 'Association') {
            newEdge.animated = false;
            newEdge.style = { strokeDasharray: undefined };
-        } else if (data.label === 'Dependency' || data.label === 'satisfy' || data.label === 'verify') {
+        } else if (['Dependency', 'satisfy', 'verify', 'refine', 'trace'].includes(data.label || '')) {
            newEdge.animated = true;
            newEdge.style = { strokeDasharray: '5,5' };
+        } else if (['Aggregation', 'Composition', 'Containment'].includes(data.label || '')) {
+           newEdge.animated = false;
+           newEdge.style = { strokeDasharray: undefined };
+           // Note: Actual diamond markers require custom edge types or SVG definitions, 
+           // but for now we just handle the line style.
+        } else if (data.label === 'Generalization') {
+           newEdge.animated = false;
+           newEdge.style = { strokeDasharray: undefined };
         }
 
         return newEdge;
       })
+    }));
+  },
+
+  removeEdge: (id) => {
+    set(state => ({
+      edges: state.edges.filter(e => e.id !== id),
+      selectedEdgeId: null
+    }));
+  },
+
+  loadState: (newState) => {
+    set(state => ({
+      ...state,
+      ...newState,
+      // Ensure we don't overwrite functions
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      onConnect: state.onConnect,
+      addElement: state.addElement,
+      updateElement: state.updateElement,
+      selectElement: state.selectElement,
+      selectEdge: state.selectEdge,
+      updateEdge: state.updateEdge,
+      removeEdge: state.removeEdge,
+      loadState: state.loadState,
     }));
   }
 }));

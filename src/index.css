@@ -12,3 +12,29 @@ html, body, #root {
   padding: 0;
   overflow: hidden;
 }
+
+/* Fix for React Flow edge rendering in html-to-image */
+.react-flow__edge-path {
+  stroke: #475569 !important; /* slate-600 */
+  stroke-width: 1.5px !important;
+}
+
+.react-flow__edge-text {
+  fill: #1e293b !important; /* slate-800 */
+  font-family: var(--font-mono);
+  font-size: 11px !important;
+}
+
+.react-flow__edge-textbg {
+  fill: #f8fafc !important; /* slate-50 */
+  stroke: #cbd5e1 !important; /* slate-300 */
+  stroke-width: 1px !important;
+  rx: 4px;
+  ry: 4px;
+}
+
+/* Ensure connection lines are visible */
+.react-flow__connection-path {
+  stroke: #475569 !important;
+  stroke-width: 1.5px !important;
+}
