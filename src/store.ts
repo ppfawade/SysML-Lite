@@ -68,7 +68,7 @@ const initialEdges: Edge[] = [
     source: 'node-1', 
     target: 'node-2', 
     label: 'satisfy', 
-    animated: true, 
+    animated: false, 
     style: { strokeDasharray: '5,5' },
     type: 'smoothstep',
     markerEnd: { type: MarkerType.ArrowClosed }
@@ -100,7 +100,9 @@ export const useStore = create<AppState>((set, get) => ({
         label: '', // Default no label
         animated: false,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#333' }, // Standard arrow
-        style: { strokeWidth: 1.5, stroke: '#333' }
+        style: { strokeWidth: 1.5, stroke: '#333' },
+        labelBgStyle: { fill: '#ffffff', fillOpacity: 0.95 },
+        labelStyle: { fill: '#1e293b', fontWeight: 500, fontSize: 12 }
       }, get().edges),
     });
   },
@@ -175,6 +177,7 @@ export const useStore = create<AppState>((set, get) => ({
         } else if (['Dependency', 'satisfy', 'verify', 'refine', 'trace'].includes(label)) {
            newEdge.style = { ...newEdge.style, strokeDasharray: '5,5' };
            newEdge.markerEnd = { type: MarkerType.ArrowClosed }; // Should be open arrow technically, but ArrowClosed is closest in default
+           newEdge.animated = false; // Disable animation for export visibility
         } else if (label === 'Composition') {
            newEdge.markerStart = 'composition'; // Requires custom marker, fallback to standard for now
            newEdge.markerEnd = undefined;

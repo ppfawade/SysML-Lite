@@ -14,10 +14,10 @@ const SysMLNode = memo(({ data, selected }: NodeProps) => {
   // Common Handles
   const Handles = () => (
     <>
-      <Handle type="target" position={Position.Top} className="!bg-slate-800 w-8 h-8 -top-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
-      <Handle type="source" position={Position.Bottom} className="!bg-slate-800 w-8 h-8 -bottom-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
-      <Handle type="target" position={Position.Left} className="!bg-slate-800 w-8 h-8 -left-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
-      <Handle type="source" position={Position.Right} className="!bg-slate-800 w-8 h-8 -right-4 opacity-10 hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="target" position={Position.Top} className="!bg-slate-800 w-10 h-10 -top-5 opacity-0 group-hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="source" position={Position.Bottom} className="!bg-slate-800 w-10 h-10 -bottom-5 opacity-0 group-hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="target" position={Position.Left} className="!bg-slate-800 w-10 h-10 -left-5 opacity-0 group-hover:opacity-50 transition-opacity rounded-full" />
+      <Handle type="source" position={Position.Right} className="!bg-slate-800 w-10 h-10 -right-5 opacity-0 group-hover:opacity-50 transition-opacity rounded-full" />
     </>
   );
 
