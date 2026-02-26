@@ -1,0 +1,5 @@
+{
+  "name": "SysML Lite",
+  "description": "A lightweight, client-side SysML modeling tool with local persistence and export capabilities.",
+  "requestFramePermissions": []
+}
